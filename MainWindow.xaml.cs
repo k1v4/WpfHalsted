@@ -355,49 +355,6 @@ namespace WpfHalsted
             {
                 System.Windows.MessageBox.Show("Что-то пошло не так! Свяжитесь с службой поддержки!");
             }
-
-            //string nameFile = textBoxPath.Text;
-
-            //try
-            //{
-            //    // Проверяем существует ли файл и проверяем работаем ли мы с таким языком
-            //    if (!Directory.Exists(nameFile) && !File.Exists(nameFile))
-            //    {
-            //        throw new FileNotFoundException();
-            //    }
-            //    else if (File.Exists(nameFile) && LanguageMetr(nameFile) == "NONE")
-            //    {
-            //        throw new FileFormatException();
-            //    }
-            //    else
-            //    {
-            //        textBoxPath.Foreground = Brushes.Black;
-            //        SecondMain(nameFile);
-            //        textBoxPath.Text = "";
-            //        textBoxPath.Background = Brushes.White;
-            //    }
-            //}
-            //catch (FileNotFoundException)
-            //{
-            //    textBoxPath.Text = "";
-            //    textBoxPath.Foreground = Brushes.DarkRed;
-            //    textBoxPath.FontWeight = FontWeights.Bold;
-            //    System.Windows.MessageBox.Show("Вы ошиблись! Ни файл, ни папка не были найдены!");
-            //}
-            //catch (FileFormatException)
-            //{
-            //    textBoxPath.Text = "";
-            //    textBoxPath.Foreground = Brushes.DarkRed;
-            //    textBoxPath.FontWeight = FontWeights.Bold;
-            //    System.Windows.MessageBox.Show("Мы пока не работаем с данным расширением!");
-            //}
-            //catch (Exception)
-            //{
-            //    textBoxPath.Text = "";
-            //    textBoxPath.Foreground = Brushes.DarkRed;
-            //    textBoxPath.FontWeight = FontWeights.Bold;
-            //    System.Windows.MessageBox.Show("Что-то пошло не так! Свяжитесь с службой поддержки!");
-            //}
         }
 
         private void Button_Help_Click(object sender, RoutedEventArgs e)
