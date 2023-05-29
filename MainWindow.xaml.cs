@@ -27,8 +27,6 @@ namespace WpfHalsted
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
-        private static object result;
-
         public MainWindow()
         {
             InitializeComponent();
