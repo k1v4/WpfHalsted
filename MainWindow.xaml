@@ -19,7 +19,7 @@
             </Border.Effect>
             <StackPanel Margin="-3,0,-3,-15" Orientation = "Vertical">
                 <TextBlock Text="Подсчёт метрик" FontSize="30" FontWeight="Bold" Margin="0 0 0 20" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <TextBlock Text="Для начала работы ознакомьтесь со справкой" FontSize="15" FontWeight="Bold" Margin="0 0 0 10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF3D3838" />
+                <TextBlock Text="Для начала работы ознакомтесь со справкой" FontSize="15" FontWeight="Bold" Margin="0 0 0 10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF3D3838" />
                 <TextBlock Text="f1 - вызов справки" FontSize="15" FontWeight="Bold" Margin="0 0 0 10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FF3D3838" />
                 <Button Content="Выбрать файл" Margin="10" x:Name="authButton" Click="Button_Count_Click" HorizontalAlignment="Left" Width="465" Grid.Column="0" Grid.Row="0"/>
                 <Button Content="Справка" Margin="10" x:Name="helpButton" Click="Button_Help_Click" Width="465" Grid.Column="1" Grid.Row="0"/>
