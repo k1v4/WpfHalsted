@@ -87,8 +87,8 @@ namespace WpfHalsted
             int indexNameFile = path.LastIndexOf(@"\"); // Находим индекс последнего \, для последующего выделения имени
             string fileName = path.Remove(0, indexNameFile + 1); // Выделяем имя
 
-            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов", "Число уникальных операндов", "Общее число операторов", "Общее число операндов",
-                            "Словарь", "Продолжительность программы", "Объем программы", "Сложность реализации", "Трудность"); // Создаём таблицу
+            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
+                            "Словарь (n = n1 + n2)", "Продолжительность программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             Console.WriteLine();
             if (LanguageMetr(fileName) == "C#")
@@ -155,8 +155,8 @@ namespace WpfHalsted
         /// <param name="path"></param>
         static void ReadDirectory(string[] arrFiles)
         {
-            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов", "Число уникальных операндов", "Общее число операторов", "Общее число операндов",
-                            "Словарь", "Продолжительность программы", "Объем программы", "Сложность реализации", "Трудность"); // Создаём таблицу
+            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
+                             "Словарь (n = n1 + n2)", "Продолжительность программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             string path = "";
             // var table = new ConsoleTable("File name", "Number of rows", "Language", "Number of unique operators", "Number of unique operands", "Total number of operators", "Total number of operands",
@@ -266,7 +266,7 @@ namespace WpfHalsted
         /// <param name="info"></param>
         static void FillFile(string info, string path)
         {
-            path += "\\The Result Of The Calculation Of Halsted Metrics.txt";
+            path += $"\\The Result Of The Calculation Of Halsted Metrics.txt";
 
             using (FileStream fstream = new FileStream(path, FileMode.Create))
             {
@@ -331,7 +331,7 @@ namespace WpfHalsted
             {
                 Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-                dlg.Filter = "Cs Files (*.cs)|*.cs|Py Files (*.py)|*.py";
+                dlg.Filter = "Cs Files (*.cs)|*.cs|Py Files (*.py)|*.py|Py and CS Files (*.py;*.cs)|*.py;*.cs";
 
                 dlg.Multiselect = true;
 

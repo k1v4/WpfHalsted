@@ -13,7 +13,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Border MinWidth ="400" MaxWidth="550" Margin="15,0,15,0" Background="White" VerticalAlignment="Center" Padding="30" CornerRadius="20" Height="264" Grid.ColumnSpan="2">
+        <Border MinWidth ="400" MaxWidth="550" Margin="15,0,15,0" Background="White" VerticalAlignment="Center" Padding="30" CornerRadius="20" Height="280" Grid.ColumnSpan="2">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="30" Color="LightGray" ShadowDepth="0"/>
             </Border.Effect>
