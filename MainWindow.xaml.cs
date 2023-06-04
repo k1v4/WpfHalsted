@@ -354,7 +354,7 @@ namespace WpfHalsted
             {
                 Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-                dlg.Filter = "Cs Files (*.cs)|*.cs|Py Files (*.py)|*.py|Py and CS Files (*.py;*.cs)|*.py;*.cs";
+                dlg.Filter = "Py and CS Files (*.py;*.cs)|*.py;*.cs|Cs Files (*.cs)|*.cs|Py Files (*.py)|*.py";
 
                 dlg.Multiselect = true;
 
