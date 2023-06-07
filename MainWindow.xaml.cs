@@ -107,7 +107,7 @@ namespace WpfHalsted
             string fileName = path.Remove(0, indexNameFile + 1); // Выделяем имя
 
             var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
-                            "Словарь (n = n1 + n2)", "Продолжительность программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
+                            "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             Console.WriteLine();
             if (LanguageMetr(fileName) == "C#")
@@ -171,11 +171,9 @@ namespace WpfHalsted
         static void ReadDirectory(string[] arrFiles)
         {
             var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
-                             "Словарь (n = n1 + n2)", "Продолжительность программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
+                             "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             string path = "";
-            // var table = new ConsoleTable("File name", "Number of rows", "Language", "Number of unique operators", "Number of unique operands", "Total number of operators", "Total number of operands",
-            //               "Dictionary", "Duration of the program", "Volume of the program", "Complexity of implementation", "Difficulty")
 
             foreach (string fileNames in arrFiles)
             {
