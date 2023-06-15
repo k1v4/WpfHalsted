@@ -22,44 +22,46 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WpfHalsted
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
+        // Инициализация окна
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        // Подсчет метрик для Python
         static int[] CountPython(string fileName)
         {
-            int[] result = new int[4] { 0, 0, 0, 0};
+            int[] result = new int[4] { 0, 0, 0, 0}; // массив для 4 метрик
             int uniqueOperators = 0;
             int uniqueOperands = 0;
             int allOperators = 0;
             int allOperands = 0;
 
-            string code = File.ReadAllText(fileName);
-            //code = Regex.Replace(code, @"(//.*)", "");
-            code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty);
+            string code = File.ReadAllText(fileName); // считываем код в строку с файла
+            code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty); // проверить как пишутся коменты в питоне
 
             var operators = new HashSet<string> { "<=", ">=", "==", "!=", "+=", "-=", "/=", "*=", "%=", "**=", "//=",
-                                                "and ", "or ", "not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", "=", "+", "-", "//", "/", "**", "*", "%", "<", ">",};
+                                                  "and ", "or ", "not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", 
+                                                  "=", "+", "-", "//", "/", "**", "*", "%", "<", ">",};
 
-            if (code == "") return result;
+            if (code == "") return result; // Проверка на пустоту
+
             foreach (var elem in operators)
             {
                 int i = 0;
-                int c = 0;
+                int count = 0; // Вспомогательная переменная для того, чтобы уникальный оператор подсчитывался единажды
+
                 do
                 {
                     i = code.IndexOf(elem, i + 1);
+
                     if (i != -1)
                     {
-                        if (c == 0)
+                        if (count == 0)
                         {
-                            c++;
+                            count++;
                             uniqueOperators++;
                         }
 
@@ -67,12 +69,12 @@ namespace WpfHalsted
                     }
                 } while (i != -1);
 
-                code = code.Replace(elem, " ");
+                code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
-            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', ',' }, StringSplitOptions.RemoveEmptyEntries);                      
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', 
+                                                         '[', ']', '{', '}', ',' }, StringSplitOptions.RemoveEmptyEntries);                      
 
-            HashSet<string> UniqOperatots = new HashSet<string>();
             HashSet<string> UniqOperands = new HashSet<string>();
             
             for (int i = 0; i < splitCode.Length; i++)
@@ -106,13 +108,17 @@ namespace WpfHalsted
             int indexNameFile = path.LastIndexOf(@"\"); // Находим индекс последнего \, для последующего выделения имени
             string fileName = path.Remove(0, indexNameFile + 1); // Выделяем имя
 
-            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
-                            "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
+            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
+                                         "Число уникальных операндов (n2)", "Общее число операторов (N1)", 
+                                         "Общее число операндов (N2)", "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", 
+                                         "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", 
+                                         "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             Console.WriteLine();
+
             if (LanguageMetr(fileName) == "C#")
             {
-                int[] OperstorsOperands = CountOper(path);
+                int[] OperstorsOperands = CountCS(path);
                 int uniqueOperators = OperstorsOperands[0];
                 int uniqueOperands = OperstorsOperands[1];
                 int allOperators = OperstorsOperands[2];
@@ -133,7 +139,9 @@ namespace WpfHalsted
                     difficulty = (uniqueOperators / 2) + (allOperands / uniqueOperands);
                 }
 
-                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
+                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, 
+                             allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), 
+                             Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
             }
             else if (LanguageMetr(fileName) == "Python")
             {
@@ -158,7 +166,9 @@ namespace WpfHalsted
                     difficulty = (uniqueOperators / 2.0) + (allOperands / uniqueOperands);
                 }
 
-                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity,3), Math.Round(difficulty,3)); // Добавляем ряд в таблицу
+                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, 
+                             dictionary, duration, Math.Round(volume, 3), Math.Round(complexity,3), 
+                             Math.Round(difficulty,3)); // Добавляем ряд в таблицу
             }
 
             FillFile(table.ToString(), System.IO.Path.GetDirectoryName(path));
@@ -170,8 +180,10 @@ namespace WpfHalsted
         /// <param name="path"></param>
         static void ReadDirectory(string[] arrFiles)
         {
-            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
-                             "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
+            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
+                                         "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
+                                         "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", 
+                                         "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             string path = "";
 
@@ -184,7 +196,7 @@ namespace WpfHalsted
 
                 if (LanguageMetr(fileNames) == "C#")
                 {
-                    int[] OperstorsOperands = CountOper(fileNames);
+                    int[] OperstorsOperands = CountCS(fileNames);
                     int uniqueOperators = OperstorsOperands[0];
                     int uniqueOperands = OperstorsOperands[1];
                     int allOperators = OperstorsOperands[2];
@@ -283,21 +295,22 @@ namespace WpfHalsted
             System.Windows.MessageBox.Show($"Итоги записаны в файл путь до которого: {path}");
         }
 
-        static int[] CountOper(string fileName)
+        static int[] CountCS(string fileName)
         {
             int[] result = new int[4] { 0, 0, 0, 0};
             int allOperators = 0;
             int uniqueOperators = 0;
             int allOperands = 0;
-            int uniqueOperands = 0;
 
             string code = File.ReadAllText(fileName);
-            //code = Regex.Replace(code, @"(//.*)", "");
             code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty);          
 
             var operators = new HashSet<string> { "++", "--", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", 
-                                                  "<<=", ">>=", "%", "+", "-", "*", "/", "&", "|", "^", "!", "~", "<", ">", "?", ":", "="};
+                                                  "<<=", ">>=", "%", "+", "-", "*", "/", "&", "|", "^", "!", "~", "<", ">", "?", 
+                                                  ":", "="};
+
             if (code == "") return result;
+
             foreach (var elem in operators)
             {
                 int i = -1;
@@ -320,9 +333,9 @@ namespace WpfHalsted
                 code = code.Replace(elem, " ");
             }
 
-            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', 
+                                                         ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            HashSet<string> UniqOperatots = new HashSet<string>();
             HashSet<string> UniqOperands = new HashSet<string>();
 
             for (int i = 0; i < splitCode.Length; i++)
@@ -336,10 +349,8 @@ namespace WpfHalsted
                 }
             }
 
-            uniqueOperands = UniqOperands.Count;
-
             result[0] = uniqueOperators;
-            result[1] = uniqueOperands;
+            result[1] = UniqOperands.Count;
             result[2] = allOperators;
             result[3] = allOperands;
 
@@ -390,14 +401,6 @@ namespace WpfHalsted
             {
                 System.Windows.Forms.Help.ShowHelp(null, commandText, HelpNavigator.TopicId, "12");
             }
-        }
-    }
-
-    public static class StringExtensions
-    {
-        public static int Count(this string input, string substr)
-        {
-            return Regex.Matches(input, substr).Count;
         }
     }
 }
