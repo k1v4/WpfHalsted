@@ -21,13 +21,14 @@ namespace WpfHalsted
         // Подсчет метрик для Python
         static int[] CountPython(string fileName)
         {
-            int[] result = new int[4] { 0, 0, 0, 0}; // массив для 4 метрик
+            int[] result = new int[4] { 0, 0, 0, 0}; // Массив для 4 метрик
             int uniqueOperators = 0;
             int allOperators = 0;
             int allOperands = 0;
+            string commentPattern = @"((#.*)|('[^']*'|""[^""]*""))";
 
             string code = File.ReadAllText(fileName); // Cчитываем код из файла в строку
-            code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty); // проверить как пишутся коменты в питоне
+            code = Regex.Replace(code, commentPattern, String.Empty); 
 
             var operators = new HashSet<string> { "<=", ">=", "==", "!=", "+=", "-=", "/=", "*=", "%=", "**=", "//=",
                                                   "and ", "or ", "not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", 
@@ -87,8 +88,9 @@ namespace WpfHalsted
         static void ReadFiles(string[] arrFiles)
         {
             var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
-                                         "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
-                                         "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", 
+                                         "Число уникальных операндов (n2)", "Общее число операторов (N1)", 
+                                         "Общее число операндов (N2)", "Словарь (n = n1 + n2)", 
+                                         "Длина программы (N = N1 + N2)", "Объем программы (N * log2(n))", 
                                          "Сложность реализации ((n1*N2)/(2*n2))", "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
 
             string path = "";
@@ -103,27 +105,30 @@ namespace WpfHalsted
                 switch (LanguageMetr(fileName))
                 {
                     case "C#":
-                        FillTable(CountCS(fileNames), fileName, table, lines);
+                        // Вызываем метод для подсчета метрик для языка C# и заполняем таблицу
+                        FillTable(CountCS(fileNames), fileName, table, lines); 
                         break;
 
                     case "Python":
+                        // Вызываем метод для подсчета метрик для языка Python и заполняем таблицу
                         FillTable(CountPython(fileNames), fileName, table, lines);
                         break;
 
                     case "Pascal":
+                        // Вызываем метод для подсчета метрик для языка Pascal и заполняем таблицу
                         FillTable(CountPascal(fileNames), fileName, table, lines);
                         break;
                 }
             }
             string tableStr = table.ToString();
 
-            FillFile($"{tableStr}", path);
+            FillFile($"{tableStr}", path); // Вызываем метод для заполнения файла
         }
 
         // Проверка языка программирования
         static string LanguageMetr(string nameFile)
         {
-            int indexNameFile = nameFile.LastIndexOf(@"."); // Находим индекс последнего ., для последующего выделения расширения
+            int indexNameFile = nameFile.LastIndexOf(@"."); // Находим индекс последнего . для последующего выделения расширения
             string fileName = nameFile.Remove(0, indexNameFile + 1); // Выделяем расширение
 
             Dictionary<string, string> pickFileName = new Dictionary<string, string>() // Словарь с расширениями файла
@@ -161,27 +166,29 @@ namespace WpfHalsted
         // Подсчет метрик для C#
         static int[] CountCS(string fileName)
         {
-            int[] result = new int[4] { 0, 0, 0, 0};
+            int[] result = new int[4] { 0, 0, 0, 0}; // Массив для 4 метрик
             int allOperators = 0;
             int uniqueOperators = 0;
             int allOperands = 0;
 
-            string code = File.ReadAllText(fileName);
+            string code = File.ReadAllText(fileName); // Cчитываем код из файла в строку
             code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty);
 
-            var operators = new HashSet<string> { "??=", "??", "?.", "?[", "++", "--", "==", "!=", "&&", "||", "+=", "-=", "*=", "->", "/=", "%=", "&=",
-                                                  "|=", "^=", "<<=", ">>=", "%", "+", "-", "*", "/", "&", "|", "^", "!", "~", "<<<", ">>>", "<<", "=>",
-                                                  ">>", "<", ">", "?", "::", ":", "=", "..", ".", "[", "(", "is ", "as ", "typeof ", "op ", "switch ",
-                                                  "case ", "try ", "while ", "await ", "default ", "delegate ", "new ", "sizeof ", "with ", "nameof ",
-                                                  "for(", "for ", "foreach(", "foreach ", "throw ", "break;", "break ", "continue ", "yield ", "return;", 
-                                                  "return " };
+            var operators = new HashSet<string> { "??=", "??", "?.", "?[", "++", "--", "==", "!=", "&&", "||", "+=", "-=", 
+                                                  "*=", "->", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "%", "+", "-", 
+                                                  "*", "/", "&", "|", "^", "!", "~", "<<<", ">>>", "<<", "=>", ">>", "<", 
+                                                  ">", "?", "::", ":", "=", "..", ".", "[", "(", "is ", "as ", "typeof ", 
+                                                  "op ", "switch ", "case ", "try ", "while ", "await ", "default ", 
+                                                  "delegate ", "new ", "sizeof ", "with ", "nameof ", "for(", "for ", 
+                                                  "foreach(", "foreach ", "throw ", "break;", "break ", "continue ", "yield ", 
+                                                  "return" };
 
-            if (code == "") return result;
+            if (code == "") return result; // Проверка на пустоту
 
             foreach (var elem in operators)
             {
                 int i = -1;
-                int c = 0;
+                int count = 0; // Вспомогательная переменная для того, чтобы уникальный оператор подсчитывался единажды
 
                 do
                 {
@@ -189,9 +196,9 @@ namespace WpfHalsted
 
                     if (i != -1)
                     {
-                        if (c == 0)
+                        if (count == 0)
                         {
-                            c++;
+                            count++;
                             uniqueOperators++;
                         }
 
@@ -199,10 +206,10 @@ namespace WpfHalsted
                     }
                 } while (i != -1);
 
-                code = code.Replace(elem, " ");
+                code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
-            var extraOperators = new HashSet<string> { ""};
+            var extraOperators = new HashSet<string> { "" };
 
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', 
                                                          ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -231,7 +238,7 @@ namespace WpfHalsted
         // Подсчет метрик для Pascal
         static int[] CountPascal(string fileName)
         {
-            int[] result = new int[4] { 0, 0, 0, 0 };
+            int[] result = new int[4] { 0, 0, 0, 0 }; // Массив для 4 метрик
             int allOperators = 0;
             int uniqueOperators = 0;
             int allOperands = 0;
@@ -248,12 +255,12 @@ namespace WpfHalsted
             var operators = new HashSet<string> { "<=", ">=", "=", "<>", "and ", "or ", "not ", "case ", "with ", "if", "repeat",
                                                   "for", "while", ":=", "+", "-", "div ", "/", "*", "mod ", "<", ">",};
 
-            if (code == "") return result;
+            if (code == "") return result; // Проверка на пустоту
 
             foreach (var elem in operators)
             {
                 int i = -1;
-                int c = 0;
+                int count = 0; // Вспомогательная переменная для того, чтобы уникальный оператор подсчитывался единажд
 
                 do
                 {
@@ -261,9 +268,9 @@ namespace WpfHalsted
 
                     if (i != -1)
                     {
-                        if (c == 0)
+                        if (count == 0)
                         {
-                            c++;
+                            count++;
                             uniqueOperators++;
                         }
 
@@ -271,7 +278,7 @@ namespace WpfHalsted
                     }
                 } while (i != -1);
 
-                code = code.Replace(elem, " ");
+                code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '(', ')', '[', ']', '{', '}', 
