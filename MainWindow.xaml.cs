@@ -163,7 +163,7 @@ namespace WpfHalsted
                     if (uniqueOperands != 0)
                     {
                         complexity = (uniqueOperators * (double)allOperands) / (2.0 * uniqueOperands);
-                        difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);;
+                        difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);
                     }
 
                     table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
@@ -227,11 +227,14 @@ namespace WpfHalsted
             int allOperands = 0;
 
             string code = File.ReadAllText(fileName);
-            code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty);          
+            code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty);
 
-            var operators = new HashSet<string> { "++", "--", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", 
-                                                  "<<=", ">>=", "%", "+", "-", "*", "/", "&", "|", "^", "!", "~", "<", ">", "?", 
-                                                  ":", "="};
+            var operators = new HashSet<string> { "??=", "??", "?.", "?[", "++", "--", "==", "!=", "&&", "||", "+=", "-=", "*=", "->", "/=", "%=", "&=",
+                                                  "|=", "^=", "<<=", ">>=", "%", "+", "-", "*", "/", "&", "|", "^", "!", "~", "<<<", ">>>", "<<", "=>",
+                                                  ">>", "<", ">", "?", "::", ":", "=", "..", ".", "[", "(", "is ", "as ", "typeof ", "op ", "switch ",
+                                                  "case ", "try ", "while ", "await ", "default ", "delegate ", "new ", "sizeof ", "with ", "nameof ",
+                                                  "for(", "for ", "foreach(", "foreach ", "throw ", "break;", "break ", "continue ", "yield ", "return;", 
+                                                  "return " };
 
             if (code == "") return result;
 
@@ -257,10 +260,12 @@ namespace WpfHalsted
                 code = code.Replace(elem, " ");
             }
 
+            var extraOperators = new HashSet<string> { ""};
+
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', 
                                                          ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            HashSet<string> UniqOperands = new HashSet<string>();
+            var UniqOperands = new HashSet<string> { " do", "do{", " catch", "catch(", "catch{"," finally", " finally{"};
 
             for (int i = 0; i < splitCode.Length; i++)
             {
