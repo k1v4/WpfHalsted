@@ -35,11 +35,10 @@ namespace WpfHalsted
         {
             int[] result = new int[4] { 0, 0, 0, 0}; // массив для 4 метрик
             int uniqueOperators = 0;
-            int uniqueOperands = 0;
             int allOperators = 0;
             int allOperands = 0;
 
-            string code = File.ReadAllText(fileName); // считываем код в строку с файла
+            string code = File.ReadAllText(fileName); // Cчитываем код из файла в строку
             code = Regex.Replace(code, @"(?s)\s*\/\/.+?\n|\/\*.*?\*\/\s*", String.Empty); // проверить как пишутся коменты в питоне
 
             var operators = new HashSet<string> { "<=", ">=", "==", "!=", "+=", "-=", "/=", "*=", "%=", "**=", "//=",
@@ -88,10 +87,8 @@ namespace WpfHalsted
                 }
             }
 
-            uniqueOperands = UniqOperands.Count;
-
             result[0] = uniqueOperators;
-            result[1] = uniqueOperands;
+            result[1] = UniqOperands.Count;
             result[2] = allOperators;
             result[3] = allOperands;
 
@@ -166,7 +163,9 @@ namespace WpfHalsted
                         difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);
                     }
 
-                    table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
+                    table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, 
+                                 allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), 
+                                 Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
                 }
             }
             string tableStr = table.ToString();
@@ -219,6 +218,7 @@ namespace WpfHalsted
             System.Windows.MessageBox.Show($"Итоги записаны в файл путь до которого: {path}");
         }
 
+        // Подсчет метрик для C#
         static int[] CountCS(string fileName)
         {
             int[] result = new int[4] { 0, 0, 0, 0};
@@ -242,9 +242,11 @@ namespace WpfHalsted
             {
                 int i = -1;
                 int c = 0;
+
                 do
                 {
                     i = code.IndexOf(elem, i + 1);
+
                     if (i != -1)
                     {
                         if (c == 0)
@@ -266,6 +268,76 @@ namespace WpfHalsted
                                                          ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             var UniqOperands = new HashSet<string> { " do", "do{", " catch", "catch(", "catch{"," finally", " finally{"};
+
+            for (int i = 0; i < splitCode.Length; i++)
+            {
+                string element = splitCode[i];
+                allOperands++;
+
+                if (!UniqOperands.Contains(element))
+                {
+                    UniqOperands.Add(element);
+                }
+            }
+
+            result[0] = uniqueOperators;
+            result[1] = UniqOperands.Count;
+            result[2] = allOperators;
+            result[3] = allOperands;
+
+            return result;
+        }
+
+        // Подсчет метрик для Pascal
+        static int[] CountPascal(string fileName)
+        {
+            int[] result = new int[4] { 0, 0, 0, 0 };
+            int allOperators = 0;
+            int uniqueOperators = 0;
+            int allOperands = 0;
+            string commentPattern1 = @"\{.*?\}";
+            string commentPattern2 = "@\"//.*\"";
+            string commentPattern3 = @"(\*.*?\*)";
+
+
+            string code = File.ReadAllText(fileName); // Cчитываем код в строку с файла
+            code = Regex.Replace(code, commentPattern1, String.Empty, RegexOptions.Singleline);
+            code = Regex.Replace(code, commentPattern2, String.Empty);
+            code = Regex.Replace(code, commentPattern3, String.Empty, RegexOptions.Singleline);
+
+            var operators = new HashSet<string> { "<=", ">=", "=", "<>", "and ", "or ", "not ", "case ", "with ", "if", "repeat",
+                                                  "for", "while", ":=", "+", "-", "div ", "/", "*", "mod ", "<", ">",};
+
+            if (code == "") return result;
+
+            foreach (var elem in operators)
+            {
+                int i = -1;
+                int c = 0;
+
+                do
+                {
+                    i = code.IndexOf(elem, i + 1);
+
+                    if (i != -1)
+                    {
+                        if (c == 0)
+                        {
+                            c++;
+                            uniqueOperators++;
+                        }
+
+                        allOperators++;
+                    }
+                } while (i != -1);
+
+                code = code.Replace(elem, " ");
+            }
+
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '(', ')', '[', ']', '{', '}', 
+                                                         ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            HashSet<string> UniqOperands = new HashSet<string>();
 
             for (int i = 0; i < splitCode.Length; i++)
             {
