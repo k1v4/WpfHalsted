@@ -7,6 +7,7 @@ using ConsoleTables;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace WpfHalsted
 {
@@ -209,12 +210,14 @@ namespace WpfHalsted
                 code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
-            var extraOperators = new HashSet<string> { "" };
+            var extraOperators = new HashSet<string> { "do", "do{", "catch", "catch(", "catch{", "finally", "finally{" };
 
-            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}', 
+            var UniqOperands = new HashSet<string>();
+
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}',
                                                          ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var UniqOperands = new HashSet<string> { " do", "do{", " catch", "catch(", "catch{"," finally", " finally{"};
+            splitCode = splitCode.Where(x => !extraOperators.Contains(x)).ToArray();//Удаление вторых частей из массива
 
             for (int i = 0; i < splitCode.Length; i++)
             {
