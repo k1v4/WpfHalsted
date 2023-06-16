@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ConsoleTables;
 using System.IO;
-using System.Xml.Linq;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WpfHalsted
 {
@@ -95,10 +83,7 @@ namespace WpfHalsted
             return result;
         }
 
-        /// <summary>
-        /// Работа с папками
-        /// </summary>
-        /// <param name="path"></param>
+        // Работа с папками
         static void ReadFiles(string[] arrFiles)
         {
             var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
@@ -115,57 +100,19 @@ namespace WpfHalsted
                 string fileName = fileNames.Remove(0, indexNameFile + 1); // Выделяем имя
                 int lines = File.ReadAllLines(fileNames).Length; // Количество строк в файле
 
-                if (LanguageMetr(fileNames) == "C#")
+                switch (LanguageMetr(fileName))
                 {
-                    int[] OperstorsOperands = CountCS(fileNames);
-                    int uniqueOperators = OperstorsOperands[0];
-                    int uniqueOperands = OperstorsOperands[1];
-                    int allOperators = OperstorsOperands[2];
-                    int allOperands = OperstorsOperands[3];
+                    case "C#":
+                        FillTable(CountCS(fileNames), fileName, table, lines);
+                        break;
 
-                    int dictionary = uniqueOperators + uniqueOperands;
-                    int duration = allOperators + allOperands;
-                    double volume = 0;
+                    case "Python":
+                        FillTable(CountPython(fileNames), fileName, table, lines);
+                        break;
 
-                    if (dictionary != 0) volume = duration * Math.Log(dictionary, 2); ;
-
-                    double complexity = 0;
-                    double difficulty = 0;
-
-                    if (uniqueOperands != 0)
-                    {
-                        complexity = (uniqueOperators * (double)allOperands) / (2.0 * uniqueOperands);
-                        difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);
-                    }
-
-                    table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
-                }
-                else if (LanguageMetr(fileNames) == "Python")
-                {
-                    int[] OperstorsOperands = CountPython(fileNames);
-                    int uniqueOperators = OperstorsOperands[0];
-                    int uniqueOperands = OperstorsOperands[1];
-                    int allOperators = OperstorsOperands[2];
-                    int allOperands = OperstorsOperands[3];
-
-                    int dictionary = uniqueOperators + uniqueOperands;
-                    int duration = allOperators + allOperands;
-                    double volume = 0;
-
-                    if (dictionary != 0) volume = duration * Math.Log(dictionary, 2); ;
-
-                    double complexity = 0;
-                    double difficulty = 0;
-
-                    if (uniqueOperands != 0)
-                    {
-                        complexity = (uniqueOperators * (double)allOperands) / (2.0 * uniqueOperands);
-                        difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);
-                    }
-
-                    table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, 
-                                 allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), 
-                                 Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
+                    case "Pascal":
+                        FillTable(CountPascal(fileNames), fileName, table, lines);
+                        break;
                 }
             }
             string tableStr = table.ToString();
@@ -173,11 +120,7 @@ namespace WpfHalsted
             FillFile($"{tableStr}", path);
         }
 
-        /// <summary>
-        /// Проверка языка программирования
-        /// </summary>
-        /// <param name="nameFile"></param>
-        /// <returns></returns>
+        // Проверка языка программирования
         static string LanguageMetr(string nameFile)
         {
             int indexNameFile = nameFile.LastIndexOf(@"."); // Находим индекс последнего ., для последующего выделения расширения
@@ -200,10 +143,7 @@ namespace WpfHalsted
             }
         }
 
-        /// <summary>
-        /// Запись файла
-        /// </summary>
-        /// <param name="info"></param>
+        // Запись файла
         static void FillFile(string info, string path)
         {
             path += $"\\The Result Of The Calculation Of Halsted Metrics.txt";
@@ -356,6 +296,35 @@ namespace WpfHalsted
             result[3] = allOperands;
 
             return result;
+        }
+
+        // Заполнение таблицы готовыми результатами
+        static void FillTable(int[] metrics, string fileName, ConsoleTable table, int lines)
+        {
+            int[] OperstorsOperands = metrics;
+            int uniqueOperators = OperstorsOperands[0];
+            int uniqueOperands = OperstorsOperands[1];
+            int allOperators = OperstorsOperands[2];
+            int allOperands = OperstorsOperands[3];
+
+            int dictionary = uniqueOperators + uniqueOperands;
+            int duration = allOperators + allOperands;
+            double volume = 0;
+
+            if (dictionary != 0) volume = duration * Math.Log(dictionary, 2); ;
+
+            double complexity = 0;
+            double difficulty = 0;
+
+            if (uniqueOperands != 0)
+            {
+                complexity = (uniqueOperators * (double)allOperands) / (2.0 * uniqueOperands);
+                difficulty = (uniqueOperators / 2.0) + ((double)allOperands / uniqueOperands);
+            }
+
+            table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators,
+                         allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3),
+                         Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
         }
 
         private void Button_Count_Click(object sender, RoutedEventArgs e)
