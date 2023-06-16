@@ -99,86 +99,10 @@ namespace WpfHalsted
         }
 
         /// <summary>
-        ///Работа с файлом
-        /// </summary>
-        /// <param name="path"></param>
-        static void ReadFile(string path)
-        {
-            int lines = File.ReadAllLines(path).Length; // Количество строк в файле
-            int indexNameFile = path.LastIndexOf(@"\"); // Находим индекс последнего \, для последующего выделения имени
-            string fileName = path.Remove(0, indexNameFile + 1); // Выделяем имя
-
-            var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
-                                         "Число уникальных операндов (n2)", "Общее число операторов (N1)", 
-                                         "Общее число операндов (N2)", "Словарь (n = n1 + n2)", "Длина программы (N = N1 + N2)", 
-                                         "Объем программы (N * log2(n))", "Сложность реализации ((n1*N2)/(2*n2))", 
-                                         "Трудность (n1/2 + N2/n2)"); // Создаём таблицу
-
-            Console.WriteLine();
-
-            if (LanguageMetr(fileName) == "C#")
-            {
-                int[] OperstorsOperands = CountCS(path);
-                int uniqueOperators = OperstorsOperands[0];
-                int uniqueOperands = OperstorsOperands[1];
-                int allOperators = OperstorsOperands[2];
-                int allOperands = OperstorsOperands[3];
-
-                int dictionary = uniqueOperators + uniqueOperands;
-                int duration = allOperators + allOperands;
-                double volume = 0;
-
-                if (dictionary != 0) volume = duration * Math.Log(dictionary, 2);
-
-                double complexity = 0;
-                double difficulty = 0;
-
-                if (uniqueOperands != 0)
-                {
-                    complexity = (uniqueOperators * (float)allOperands) / (2.0 * uniqueOperands);
-                    difficulty = (uniqueOperators / 2) + (allOperands / uniqueOperands);
-                }
-
-                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, 
-                             allOperands, dictionary, duration, Math.Round(volume, 3), Math.Round(complexity, 3), 
-                             Math.Round(difficulty, 3)); // Добавляем ряд в таблицу
-            }
-            else if (LanguageMetr(fileName) == "Python")
-            {
-                int[] OperstorsOperands = CountPython(path);
-                int uniqueOperators = OperstorsOperands[0];
-                int uniqueOperands = OperstorsOperands[1];
-                int allOperators = OperstorsOperands[2];
-                int allOperands = OperstorsOperands[3];
-
-                int dictionary = uniqueOperators + uniqueOperands;
-                int duration = allOperators + allOperands;
-                double volume = 0;
-
-                if (dictionary != 0) volume = duration * Math.Log(dictionary, 2); ;
-
-                double complexity = 0;
-                double difficulty = 0;
-
-                if (uniqueOperands != 0)
-                {
-                    complexity = (uniqueOperators * (double)allOperands) / (2.0 * uniqueOperands);
-                    difficulty = (uniqueOperators / 2.0) + (allOperands / uniqueOperands);
-                }
-
-                table.AddRow(fileName, lines, LanguageMetr(fileName), uniqueOperators, uniqueOperands, allOperators, allOperands, 
-                             dictionary, duration, Math.Round(volume, 3), Math.Round(complexity,3), 
-                             Math.Round(difficulty,3)); // Добавляем ряд в таблицу
-            }
-
-            FillFile(table.ToString(), System.IO.Path.GetDirectoryName(path));
-        }
-
-        /// <summary>
         /// Работа с папками
         /// </summary>
         /// <param name="path"></param>
-        static void ReadDirectory(string[] arrFiles)
+        static void ReadFiles(string[] arrFiles)
         {
             var table = new ConsoleTable("Имя файла", "Кол-во строк", "Язык", "Число уникальных операторов (n1)", 
                                          "Число уникальных операндов (n2)", "Общее число операторов (N1)", "Общее число операндов (N2)",
@@ -189,7 +113,7 @@ namespace WpfHalsted
 
             foreach (string fileNames in arrFiles)
             {
-                if (path == "") path = fileNames.Remove(fileNames.LastIndexOf(@"\")); ;
+                if (path == "") path = fileNames.Remove(fileNames.LastIndexOf(@"\"));
                 int indexNameFile = fileNames.LastIndexOf(@"\"); // Находим индекс последнего \, для последующего выделения имени
                 string fileName = fileNames.Remove(0, indexNameFile + 1); // Выделяем имя
                 int lines = File.ReadAllLines(fileNames).Length; // Количество строк в файле
@@ -363,21 +287,16 @@ namespace WpfHalsted
             {
                 Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-                dlg.Filter = "Py, Cs and Pas Files (*.py;*.cs;*.pas)|*.py;*.cs;*.pas|Cs Files (*.cs)|*.cs|Py Files (*.py)|*.py|Pascal Files (*.pas)|*.pas";
+                dlg.Filter = "Py, Cs and Pas Files (*.py;*.cs;*.pas)|*.py;*.cs;*.pas|" +
+                             "Cs Files (*.cs)|*.cs|" +
+                             "Py Files (*.py)|*.py|" +
+                             "Pascal Files (*.pas)|*.pas";
 
                 dlg.Multiselect = true;
 
                 if (dlg.ShowDialog() == true)
                 {
-                    if(dlg.FileNames.Length > 1)
-                    {
-                        ReadDirectory(dlg.FileNames);
-                    }
-                    else
-                    {
-                        string filename = dlg.FileName;
-                        ReadFile(filename);
-                    }
+                    ReadFiles(dlg.FileNames);
                 }
             }
             catch
