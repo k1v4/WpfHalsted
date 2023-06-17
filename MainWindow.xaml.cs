@@ -32,8 +32,10 @@ namespace WpfHalsted
             code = Regex.Replace(code, commentPattern, String.Empty); 
 
             var operators = new HashSet<string> { "<=", ">=", "==", "!=", "+=", "-=", "/=", "*=", "%=", "**=", "//=",
-                                                  "and ", "or ", "not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", 
-                                                  "=", "+", "-", "//", "/", "**", "*", "%", "<", ">",};
+                                                  "and ", "or ", "not in ","not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", 
+                                                  "=", "+", "-", "//", "/", "**", "*", "%", "<", ">", "while ", "while(", 
+                                                  "for ", "try:", "try", "finally:", "finally", "except:", "except ",
+                                                  "with ", "[", "def ", "lambda ", "return ", "if "};
 
             if (code == "") return result; // Проверка на пустоту
 
@@ -61,8 +63,12 @@ namespace WpfHalsted
                 code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
-            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', 
-                                                         '[', ']', '{', '}', ',' }, StringSplitOptions.RemoveEmptyEntries);                      
+            var extraOperators = new HashSet<string> { "while", "for", "try", "finally", "except", "with", "[", "def", "lambda", "return", "if", "else", "elif"};
+
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}',
+                                                         ',' , '\"', '\'', '\\', '@', '$'}, StringSplitOptions.RemoveEmptyEntries);
+
+            splitCode = splitCode.Where(x => !extraOperators.Contains(x)).ToArray();//Удаление вторых частей из массива                  
 
             HashSet<string> UniqOperands = new HashSet<string>();
             
@@ -178,11 +184,11 @@ namespace WpfHalsted
             var operators = new HashSet<string> { "??=", "??", "?.", "?[", "++", "--", "==", "!=", "&&", "||", "+=", "-=", 
                                                   "*=", "->", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "%", "+", "-", 
                                                   "*", "/", "&", "|", "^", "!", "~", "<<<", ">>>", "<<", "=>", ">>", "<", 
-                                                  ">", "?", "::", ":", "=", "..", ".", "[", "(", "is ", "as ", "typeof ", 
-                                                  "op ", "switch ", "case ", "try ", "while ", "await ", "default ", 
+                                                  ">", "?", "::", ":", "=", "..", ".", "[", "is ", "as ", "typeof ", 
+                                                  "op ", "switch ", "case ", "try ", "try", "while ", "while", "await ", "default ", 
                                                   "delegate ", "new ", "sizeof ", "with ", "nameof ", "for(", "for ", 
                                                   "foreach(", "foreach ", "throw ", "break;", "break ", "continue ", "yield ", 
-                                                  "return" };
+                                                  "return", "if ", "if("};
 
             if (code == "") return result; // Проверка на пустоту
 
@@ -210,12 +216,16 @@ namespace WpfHalsted
                 code = code.Replace(elem, " "); // Заменяем продсчитанный элемент на пробел
             }
 
-            var extraOperators = new HashSet<string> { "do", "do{", "catch", "catch(", "catch{", "finally", "finally{" };
+            var extraOperators = new HashSet<string> { "do", "catch", "finally", "is ", "as ", "typeof ", "else",
+                                                       "op", "switch", "case", "try", "while", "await", "default",
+                                                       "delegate", "new", "sizeof", "with", "nameof", "for", "if",
+                                                       "foreach", "throw", "break", "continue", "yield", "return"};
+
 
             var UniqOperands = new HashSet<string>();
 
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}',
-                                                         ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                                         ',' , '\"', '\'', '\\', '@', '$'}, StringSplitOptions.RemoveEmptyEntries);
 
             splitCode = splitCode.Where(x => !extraOperators.Contains(x)).ToArray();//Удаление вторых частей из массива
 
@@ -357,7 +367,7 @@ namespace WpfHalsted
             }
             catch
             {
-                System.Windows.MessageBox.Show("Что-то пошло не так! Свяжитесь с службой поддержки!");
+                System.Windows.MessageBox.Show("Что-то пошло не так! Свяжитесь с службой поддержки, данные которой есть в справке!");
             }
         }
 
