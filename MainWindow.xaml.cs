@@ -33,9 +33,8 @@ namespace WpfHalsted
 
             var operators = new HashSet<string> { "<=", ">=", "==", "!=", "+=", "-=", "/=", "*=", "%=", "**=", "//=",
                                                   "and ", "or ", "not in ","not ", "in ", "is ", "&", "|", "^", "~", "<<", ">>", 
-                                                  "=", "+", "-", "//", "/", "**", "*", "%", "<", ">", "while ", "while(", 
-                                                  "for ", "try:", "try", "finally:", "finally", "except:", "except ",
-                                                  "with ", "[", "def ", "lambda ", "return ", "if "};
+                                                  "=", "+", "-", "//", "/", "**", "*", "%", "<", ">", "while", 
+                                                  "for", "try", "with ", "[", "def ", "lambda ", "return ", "if"};
 
             if (code == "") return result; // Проверка на пустоту
 
@@ -185,10 +184,10 @@ namespace WpfHalsted
                                                   "*=", "->", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=", "%", "+", "-", 
                                                   "*", "/", "&", "|", "^", "!", "~", "<<<", ">>>", "<<", "=>", ">>", "<", 
                                                   ">", "?", "::", ":", "=", "..", ".", "[", "is ", "as ", "typeof ", 
-                                                  "op ", "switch ", "case ", "try ", "try", "while ", "while", "await ", "default ", 
-                                                  "delegate ", "new ", "sizeof ", "with ", "nameof ", "for(", "for ", 
-                                                  "foreach(", "foreach ", "throw ", "break;", "break ", "continue ", "yield ", 
-                                                  "return", "if ", "if("};
+                                                  "op ", "switch ", "case ", "try", "while", "await ", "default ", 
+                                                  "delegate ", "new ", "sizeof", "with ", "nameof", "for", 
+                                                  "foreach", "throw ", "break", "continue", "yield ", 
+                                                  "return", "if"};
 
             if (code == "") return result; // Проверка на пустоту
 
