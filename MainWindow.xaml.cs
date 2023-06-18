@@ -264,8 +264,8 @@ namespace WpfHalsted
             code = Regex.Replace(code, commentPattern2, String.Empty);
             code = Regex.Replace(code, commentPattern3, String.Empty, RegexOptions.Singleline);
 
-            var operators = new HashSet<string> { "<=", ">=", "=", "<>", "and ", "or ", "not ", "case ", "with ", "if", "repeat",
-                                                  "for", "while", ":=", "+", "-", "div ", "/", "*", "mod ", "<", ">",};
+            var operators = new HashSet<string> { "<=", ">=", ":=", "<>", "and ", "or ", "not ", "case ", "with ", "if", "repeat",
+                                                  "for", "while", "=", "+", "-", "div ", "/", "*", "mod ", "<", ">" };
 
             if (code == "") return result; // Проверка на пустоту
 
@@ -294,9 +294,14 @@ namespace WpfHalsted
             }
 
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '(', ')', '[', ']', '{', '}', 
-                                                         ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                                         ',', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
             HashSet<string> UniqOperands = new HashSet<string>();
+
+            var extraOperators = new HashSet<string> { "else" };
+
+            splitCode = splitCode.Where(x => !extraOperators.Contains(x)).ToArray();//Удаление вторых частей из массива
+
 
             for (int i = 0; i < splitCode.Length; i++)
             {
