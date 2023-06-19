@@ -223,7 +223,7 @@ namespace WpfHalsted
 
             var UniqOperands = new HashSet<string>();
 
-            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '(', ')', '[', ']', '{', '}',
+            string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '\n', '\r', '\t', '(', ')', '[', ']', '{', '}',
                                                          ',' , '\"', '\'', '\\', '@', '$'}, StringSplitOptions.RemoveEmptyEntries);
 
             splitCode = splitCode.Where(x => !extraOperators.Contains(x)).ToArray();//Удаление вторых частей из массива
@@ -294,7 +294,7 @@ namespace WpfHalsted
             }
 
             string[] splitCode = code.Split(new char[] { ';', ' ', '.', ':', '(', ')', '[', ']', '{', '}', 
-                                                         ',', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+                                                         ',', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             HashSet<string> UniqOperands = new HashSet<string>();
 
