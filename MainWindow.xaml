@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:WpfHalsted"
         mc:Ignorable="d"
         Title="M-Code" Height="322" Width="566"
-        KeyDown="Window_KeyDown">
+        KeyDown="Window_KeyDown"
+        Icon="/IconPng.png">
     <Grid Background="#ffdadada">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
